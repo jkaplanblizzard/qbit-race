@@ -12,7 +12,7 @@ test('loginV2', async t => {
         password: 'adminadmin'
     }
 
-    const scope = nock(fakeSettings.url).get('/api/v2/auth/login').query({
+    const scope = nock(fakeSettings.url).post('/api/v2/auth/login').query({
         username: 'admin',
         password: 'adminadmin',
     }).reply(200, {}, {

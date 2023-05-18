@@ -8,23 +8,27 @@ export const loginV2 = async (qbittorrentSettings) => {
   console.log('Username:', username);
   console.log('Password:', password);
 
-  const response = await apiLogin(qbittorrentSettings);
-  // TODO: Differentiate between wrong credentials vs. qbit is not listening (wrong URL / port etc.)
+  try {
+    const response = await apiLogin(qbittorrentSettings);
+    // TODO: Differentiate between wrong credentials vs. qbit is not listening (wrong URL / port etc.)
 
-  console.log('Response Headers:', response.headers);
-  console.log('Response Body:', response.data);
+    console.log('Response:', response);
 
-  let cookiesArray = [];
+    let cookiesArray = [];
 
-  if (Array.isArray(response.headers['set-cookie'])) {
-    cookiesArray = response.headers['set-cookie'];
-  } else if (typeof response.headers['set-cookie'] === 'string') {
-    cookiesArray = [response.headers['set-cookie']];
+    if (Array.isArray(response.headers['set-cookie'])) {
+      cookiesArray = response.headers['set-cookie'];
+    } else if (typeof response.headers['set-cookie'] === 'string') {
+      cookiesArray = [response.headers['set-cookie']];
+    }
+
+    if (cookiesArray.length === 0) {
+      throw new Error(`Failed to authenticate`);
+    }
+
+    return new QbittorrentApi(qbittorrentSettings.url, cookiesArray[0]);
+  } catch (error) {
+    console.log('Error:', error);
+    throw error;
   }
-
-  if (cookiesArray.length === 0) {
-    throw new Error(`Failed to authenticate`);
-  }
-
-  return new QbittorrentApi(qbittorrentSettings.url, cookiesArray[0]);
 };

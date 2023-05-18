@@ -3,6 +3,13 @@ import { login as apiLogin, QbittorrentApi } from './api.js';
 
 export const loginV2 = async (qbittorrentSettings) => {
   const logger = getLoggerV3();
+  const { url, method, headers, data } = qbittorrentSettings;
+
+  console.log('Request URL:', url);
+  console.log('Request Method:', method);
+  console.log('Request Headers:', headers);
+  console.log('Request Body:', data);
+
   const response = await apiLogin(qbittorrentSettings);
   // TODO: Differentiate between wrong credentials vs. qbit is not listening (wrong URL / port etc.)
 
@@ -18,5 +25,5 @@ export const loginV2 = async (qbittorrentSettings) => {
     throw new Error(`Failed to authenticate`);
   }
 
-  return new QbittorrentApi(qbittorrentSettings.url, cookiesArray[0]);
+  return new QbittorrentApi(url, cookiesArray[0]);
 };

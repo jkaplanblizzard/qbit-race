@@ -1,5 +1,7 @@
 import axios from 'axios';
+import qs from 'qs';
 import FormData from 'form-data';
+
 export class QbittorrentApi {
     constructor(basePath, cookie) {
         this.basePath = basePath;
@@ -126,13 +128,27 @@ var ApiEndpoints;
     ApiEndpoints["transferInfo"] = "/api/v2/transfer/info";
 })(ApiEndpoints || (ApiEndpoints = {}));
 export const login = (qbittorrentSettings) => {
-    return axios.post(`${qbittorrentSettings.url}${ApiEndpoints.login}`, {
-        username: qbittorrentSettings.username,
-        password: qbittorrentSettings.password,
-    }, {
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-        },
+    let data = qs.stringify({
+        'username': qbittorrentSettings.username,
+        'password': qbittorrentSettings.password 
     });
+  
+    let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: `${qbittorrentSettings.url}${ApiEndpoints.login}`,
+        headers: { 
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        data: data
+    };
+  
+    return axios.request(config)
+        .then((response) => {
+            return response.data;
+        })
+        .catch((error) => {
+            console.log(error);
+        });
 };
 //# sourceMappingURL=api.js.map

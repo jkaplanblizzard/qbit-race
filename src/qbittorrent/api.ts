@@ -1,5 +1,6 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
-import FormData from 'form-data';
+import axios, { AxiosResponse } from 'axios';
+import qs from 'qs';
+import { QBITTORRENT_SETTINGS } from '../utils/config.js';
 
 import { torrentFromApi, TorrentState, TransferInfo } from '../interfaces.js';
 import { QBITTORRENT_SETTINGS, Settings } from '../utils/config.js';
@@ -157,45 +158,31 @@ enum ApiEndpoints {
     transferInfo = '/api/v2/transfer/info',
 }
 
-export const login = async (qbittorrentSettings: QBITTORRENT_SETTINGS): Promise<QbittorrentApi> => {
-  const logger = getLoggerV3();
-  const { username, password } = qbittorrentSettings;
-
-  logger.log('Username:', username);
-  logger.log('Password:', password);
-
-  try {
-    const response = await axios.post(`${qbittorrentSettings.url}${ApiEndpoints.login}`, {
-        username: qbittorrentSettings.username,
-        password: qbittorrentSettings.password,
-    }, {
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-        },
+export const login = (qbittorrentSettings: QBITTORRENT_SETTINGS): Promise<AxiosResponse> => {
+    let data = qs.stringify({
+        'username': qbittorrentSettings.username,
+        'password': qbittorrentSettings.password 
     });
 
-    logger.log('Response Headers:', response.headers);
-    logger.log('Response Body:', response.data);
+    let config = {
+        method: 'post',
+        maxBodyLength: Infinity,
+        url: `${qbittorrentSettings.url}${ApiEndpoints.login}`,
+        headers: { 
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        data: data
+    };
 
-    let cookiesArray = [];
-
-    if (Array.isArray(response.headers['set-cookie'])) {
-      cookiesArray = response.headers['set-cookie'];
-    } else if (typeof response.headers['set-cookie'] === 'string') {
-      cookiesArray = [response.headers['set-cookie']];
-    }
-
-    if (cookiesArray.length === 0) {
-      throw new Error(`Failed to authenticate`);
-    }
-
-    return new QbittorrentApi(qbittorrentSettings.url, cookiesArray[0]);
-  } catch (error) {
-    logger.log('Error:', error);
-    throw error;
-  }
+    return axios.request(config)
+        .then((response) => {
+            return response;
+        })
+        .catch((error) => {
+            console.log(error);
+            throw error;
+        });
 };
-
 
 // We just need the hash for some of the API calls
 export type ApiCompatibleTorrent = {

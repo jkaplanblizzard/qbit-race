@@ -145,10 +145,11 @@ export const login = (qbittorrentSettings) => {
   
     return axios.request(config)
         .then((response) => {
-            return response.data;
+            return response;
         })
         .catch((error) => {
             console.log(error);
+            throw error;
         });
 };
 //# sourceMappingURL=api.js.map

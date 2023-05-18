@@ -3,6 +3,11 @@ import { login as apiLogin, QbittorrentApi } from './api.js';
 
 export const loginV2 = async (qbittorrentSettings) => {
   const logger = getLoggerV3();
+  const { username, password } = qbittorrentSettings;
+
+  console.log('Username:', username);
+  console.log('Password:', password);
+
   const response = await apiLogin(qbittorrentSettings);
   // TODO: Differentiate between wrong credentials vs. qbit is not listening (wrong URL / port etc.)
 

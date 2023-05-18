@@ -12,7 +12,8 @@ export const loginV2 = async (qbittorrentSettings) => {
     const response = await apiLogin(qbittorrentSettings);
     // TODO: Differentiate between wrong credentials vs. qbit is not listening (wrong URL / port etc.)
 
-    console.log('Response:', response);
+    console.log('Response Headers:', response.headers);
+    console.log('Response Body:', response.data);
 
     let cookiesArray = [];
 
@@ -32,3 +33,4 @@ export const loginV2 = async (qbittorrentSettings) => {
     throw error;
   }
 };
+
